@@ -15,7 +15,7 @@
 <style>
 /* Layout: a dark cacao curtain opens through the sakura petals of the mark into a pale, dotted
    "paper" world; one gold 3D mark travels with the reader; giant italic words carry each chapter. */
-:root{
+:root{color-scheme:light only;
   --paper:#EDEBE7;      /* main ground */
   --paper-2:#E4E1DC;
   --ink:#16110E;        /* text */
@@ -78,6 +78,9 @@ header.site{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-
 header.site.on{opacity:1;pointer-events:auto}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .brand svg{display:block}
+.brand{perspective:300px}
+.brand svg:last-child{transform-origin:0 50%;transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.brand:hover svg:last-child,.brand.pop svg:last-child{transform:scale(1.05)}
 .navlink{position:relative;font:500 13px/1 var(--f-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-decoration:none;padding:12px 2px}
 .navlink::after{content:"";position:absolute;left:2px;right:2px;bottom:6px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .5s cubic-bezier(.7,0,.2,1)}
 .navlink:hover::after,.navlink:focus-visible::after{transform:scaleX(1);transform-origin:left}
@@ -92,6 +95,7 @@ header.site.on{opacity:1;pointer-events:auto}
 #cta .face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:999px;overflow:hidden;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;font:600 12px/1 var(--f-sans);letter-spacing:.2em;text-transform:uppercase;color:#fff;
   box-shadow:0 10px 26px -10px rgba(40,22,10,.55), inset 0 0 0 1px rgba(255,255,255,.18)}
+#cta .mp{display:none}
 #cta .face .jp{font:500 11px/1 var(--f-jp);letter-spacing:.12em;opacity:.75;text-transform:none}
 #cta .front{background:linear-gradient(120deg,#9A7128,#C99A4A 50%,#9A7128)}
 #cta .front::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
@@ -104,7 +108,17 @@ header.site.on{opacity:1;pointer-events:auto}
 #cta .n.on{transform:scale(1)}
 #cta .n.bump{animation:bump .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
-#cta .flip:hover .face{filter:brightness(1.08)}
+#cta .flip{scale:1;transition:transform 1s cubic-bezier(.68,-.32,.26,1.32), scale .45s cubic-bezier(.3,1.5,.5,1)}
+#cta .face{transition:box-shadow .45s, background .45s}
+#cta .flip:hover{scale:1.06}
+#cta .flip:active{scale:.95;transition-duration:1s,.12s}
+#cta .flip:hover .front{box-shadow:0 16px 30px -10px rgba(154,113,40,.75), inset 0 0 0 1px rgba(255,255,255,.35)}
+#cta .flip:hover .front::after{animation:sheen .9s ease-out}
+#cta .flip:hover .back{background:#2B180C;box-shadow:0 16px 30px -10px rgba(40,22,10,.7), inset 0 0 0 1px rgba(201,154,74,.9)}
+#cta .back svg{transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+#cta .flip:hover .back svg{transform:translateY(-2px) rotate(-8deg) scale(1.12)}
+#cta .front svg{transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+#cta .flip:hover .front svg{transform:translateX(3px)}
 /* cart drawer */
 #cartBg{position:fixed;inset:0;z-index:70;background:rgba(22,17,14,.38);opacity:0;pointer-events:none;transition:opacity .5s}
 #cartBg.open{opacity:1;pointer-events:auto}
@@ -113,14 +127,26 @@ header.site.on{opacity:1;pointer-events:auto}
 #cartPanel.open{transform:none}
 #cartPanel h2{font:300 italic 40px/1 var(--f-display);display:flex;align-items:baseline;gap:12px}
 #cartPanel h2 span{font:500 13px/1 var(--f-jp);font-style:normal;letter-spacing:.2em;color:var(--mute)}
-#cartPanel .x{position:absolute;top:calc(22px + env(safe-area-inset-top,0px));right:20px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(22,17,14,.15);background:none;font-size:18px;cursor:pointer}
+#cartPanel button{color:var(--ink)}
+#cartPanel .x{position:absolute;top:calc(22px + env(safe-area-inset-top,0px));right:20px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(22,17,14,.15);background:none;font-size:18px;cursor:pointer;display:grid;place-items:center;transition:background .3s,color .3s,transform .5s cubic-bezier(.3,1.5,.5,1)}
+#cartPanel .x:hover{background:var(--ink);color:#fff;transform:rotate(90deg)}
 #cartList{flex:1;overflow:auto;margin:26px 0;display:flex;flex-direction:column;gap:12px}
 #cartList .it{display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid rgba(22,17,14,.08)}
 #cartList .dot{width:12px;height:12px;border-radius:50%}
 #cartList .nm{font:400 italic 24px/1.1 var(--f-display)}
 #cartList .nm small{display:block;font:500 11px/1.6 var(--f-jp);font-style:normal;color:var(--mute);letter-spacing:.1em}
 #cartList .q{display:flex;align-items:center;gap:8px;font:500 14px/1 var(--f-sans)}
-#cartList .q button{width:28px;height:28px;border-radius:50%;border:1px solid rgba(22,17,14,.18);background:none;cursor:pointer}
+#cartList .q button{width:30px;height:30px;border-radius:50%;border:1px solid rgba(22,17,14,.28);background:#fff;color:var(--ink);font:500 16px/1 var(--f-sans);display:grid;place-items:center;padding:0;cursor:pointer;transition:background .25s,color .25s,transform .2s}
+#cartList .q button:hover{background:var(--ink);color:#fff}
+/* +, − and ✕ are drawn as two hairlines, so they sit exactly in the centre of the circle (text glyphs don't) */
+#cartList .q button{position:relative}
+#cartList .q button::before,#cartList .q button.pl::after,#cartPanel .x::before,#cartPanel .x::after{content:"";position:absolute;left:50%;top:50%;
+  width:10px;height:1.5px;margin:-.75px 0 0 -5px;border-radius:1px;background:currentColor}
+#cartList .q button.pl::after{transform:rotate(90deg)}
+#cartPanel .x::before,#cartPanel .x::after{width:14px;margin-left:-7px;transform:rotate(45deg)}
+#cartPanel .x::after{transform:rotate(-45deg)}
+#cartList .q button:active{transform:scale(.9)}
+#cartList .q b{min-width:18px;text-align:center;font-weight:500}
 #cartList .empty{font:500 14px/1.8 var(--f-jp);color:var(--mute)}
 #cartPanel .tot{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0;border-top:1px solid rgba(22,17,14,.12)}
 #cartPanel .tot p{font:600 11px/1 var(--f-sans);letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
@@ -499,7 +525,7 @@ html.m footer .giantmark{margin-top:6vh}
 <div id="cartBg"></div>
 <aside id="cartPanel" aria-label="カート" aria-hidden="true">
   <h2>Cart <span>カート</span></h2>
-  <button type="button" class="x" id="cartX" aria-label="閉じる">✕</button>
+  <button type="button" class="x" id="cartX" aria-label="閉じる"></button>
   <div id="cartList"></div>
   <div class="tot"><p>Total · 税抜</p><b id="cartTot">¥0</b></div>
   <button type="button" class="go" id="cartGo">Checkout</button>
@@ -689,6 +715,38 @@ $$('#menu [data-m]').forEach(a => a.addEventListener('click', () => setMenu(fals
 
 /* ---------------- three.js ---------------- */
 const host = $('#gl');
+// ---- water: while the page is moving between frames, each 3D canvas is drawn through the same slow
+// waves as the page (rendered to a texture, then sampled with a displacement). Still page: direct render.
+const ripRender = (() => {
+  const cache = new Map();
+  const fs = `precision highp float;varying vec2 vUv;uniform sampler2D tex;uniform vec4 rect;uniform float A;uniform vec2 off;uniform float T;
+    const float PI2=6.2831853;
+    void main(){vec2 p=rect.xy+vec2(vUv.x,1.-vUv.y)*rect.zw;vec2 u=(p+mod(off,T))/T;
+      vec2 d=vec2(.62*sin(PI2*(u.x+u.y))+.38*sin(PI2*(2.*u.x-u.y)+1.3), .62*sin(PI2*(u.x-u.y)+.7)+.38*sin(PI2*(u.x+2.*u.y)+2.1));
+      gl_FragColor=texture2D(tex,vUv+vec2(A*d.x/rect.z,-A*d.y/rect.w));}`;
+  const v2 = new THREE.Vector2();
+  return (r, scene, cam) => {
+    const RP = window.__rip;
+    if (!RP || !RP.alive()) { r.render(scene, cam); return; }
+    let c = cache.get(r);
+    r.getDrawingBufferSize(v2);
+    if (!c) {
+      const RT = r.capabilities.isWebGL2 && THREE.WebGLMultisampleRenderTarget ? THREE.WebGLMultisampleRenderTarget : THREE.WebGLRenderTarget;
+      const rt = new RT(v2.x, v2.y, { format: THREE.RGBAFormat });
+      rt.texture.encoding = r.outputEncoding;
+      const mat = new THREE.ShaderMaterial({ vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}', fragmentShader: fs,
+        uniforms: { tex: { value: rt.texture }, rect: { value: new THREE.Vector4() }, A: { value: 0 }, off: { value: new THREE.Vector2() }, T: { value: RP.T } },
+        depthTest: false, depthWrite: false, blending: THREE.NoBlending, toneMapped: false });
+      const sc = new THREE.Scene(); const q = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat); q.frustumCulled = false; sc.add(q);
+      c = { rt, mat, sc, cam: new THREE.Camera() }; cache.set(r, c);
+    }
+    if (c.rt.width !== v2.x || c.rt.height !== v2.y) c.rt.setSize(v2.x, v2.y);
+    r.setRenderTarget(c.rt); r.clear(); r.render(scene, cam); r.setRenderTarget(null);
+    const b = r.domElement.getBoundingClientRect(), u = c.mat.uniforms, o = RP.off();
+    u.rect.value.set(b.left, b.top, b.width, b.height); u.A.value = RP.amp() * 9; u.off.value.set(o[0], o[1]);
+    r.render(c.sc, c.cam);
+  };
+})();
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(DPR);
 renderer.outputEncoding = THREE.sRGBEncoding;
@@ -744,25 +802,57 @@ function bloomShape(n, notch, round) {
   }
   return s;
 }
-const bonbon = (sh) => { const g = new THREE.ExtrudeGeometry(sh, { depth: 0.2, bevelEnabled: true, bevelThickness: 0.085, bevelSize: 0.06, bevelSegments: 5, curveSegments: 4 }); g.center(); return g; };
+// the brand mark is engraved into the top of every chocolate: the flat caps get UVs that frame the
+// mark texture, the bevels and sides point at a blank corner of it
+const bonbon = (sh) => {
+  const g = new THREE.ExtrudeGeometry(sh, { depth: 0.2, bevelEnabled: true, bevelThickness: 0.085, bevelSize: 0.06, bevelSegments: 5, curveSegments: 4 }); g.center();
+  const P = g.attributes.position, U = g.attributes.uv, cap = new Uint8Array(P.count), gr = g.groups[0], ix = g.index;
+  for (let k = gr.start; k < gr.start + gr.count; k++) cap[ix ? ix.getX(k) : k] = 1;
+  for (let v = 0; v < P.count; v++) {
+    if (cap[v]) U.setXY(v, P.getX(v) + 0.5, P.getY(v) + 0.5);
+    else U.setXY(v, 0.005, 0.005);
+  }
+  U.needsUpdate = true; return g;
+};
+const ENGRAVE = (() => {
+  const n = 1024, c = document.createElement('canvas'); c.width = c.height = n;
+  const x = c.getContext('2d'), d = document.querySelector('.brand svg path').getAttribute('d');
+  const draw = (bg, fg, blur) => {
+    x.setTransform(1, 0, 0, 1, 0, 0); x.filter = 'none'; x.fillStyle = bg; x.fillRect(0, 0, n, n);
+    const s = n * 0.40 / 200;                         // the mark spans 40% of the piece
+    x.filter = blur ? `blur(${blur}px)` : 'none';
+    x.setTransform(s, 0, 0, -s, n / 2 - 100 * s, n / 2 + 100 * s);   // canvas y is flipped vs. the UVs
+    x.fillStyle = fg; x.fill(new Path2D(d), 'evenodd');
+    const tx = new THREE.CanvasTexture(c); tx.anisotropy = 8; return tx;
+  };
+  const bump = draw('#fff', '#000', 5);               // soft-edged groove
+  const c2 = document.createElement('canvas'); c2.width = c2.height = n; c2.getContext('2d').drawImage(c, 0, 0);
+  const tone = draw('#fff', '#c9c0b8', 3);            // the groove is a touch darker
+  tone.encoding = THREE.sRGBEncoding;
+  return { bump: new THREE.CanvasTexture(c2), tone };
+})();
+ENGRAVE.bump.anisotropy = 8;
 const BONBON = { matcha: bonbon(bloomShape(5, 0, 0.55)), strawberry: bonbon(bloomShape(8, 0.16, 1.4)), milk: bonbon(bloomShape(5, 0.14, 0.75)) };
-const chocM = (c, r = 0.32) => lin(new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.22, envMapIntensity: 0.95 }));
+const chocM = (c, r = 0.32) => lin(new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.22, envMapIntensity: 0.95,
+  map: ENGRAVE.tone, bumpMap: ENGRAVE.bump, bumpScale: 0.06 }));
 const CHOC = { dark: chocM(0x3a2015), milk: chocM(0x8a5532), strawberry: chocM(0xd98a9c, 0.38), matcha: chocM(0x7f8e45, 0.42), white: chocM(0xeee2cf, 0.38) };
 const swarm = new THREE.Group(); scene.add(swarm);
 const rng = (() => { let s = 11; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
 const bits = [];
-const bonMats = [CHOC.dark, CHOC.milk, CHOC.strawberry, CHOC.matcha, CHOC.white];
+const bonMats = [CHOC.dark, CHOC.milk, CHOC.strawberry, CHOC.matcha];   // no white chocolate in the range
 const BKEYS = Object.keys(BONBON);
+// the logo-shaped pieces are the mark themselves: same chocolates, no engraving
+const plainMats = bonMats.map(m => { const p = m.clone(); p.map = null; p.bumpMap = null; return p; });
+const matsOf = m => m.geometry === markGeo ? plainMats : bonMats;
 // 28 pieces on a jittered 7 x 4 grid, so they spread over the whole screen
 const GX = MOBILE ? 4 : 7, GY = MOBILE ? 5 : 4;
 for (let i = 0; i < GX * GY; i++) {
   let m, big;
-  if (i % 7 === 3) { m = new THREE.Mesh(markGeo, i % 14 === 3 ? CHOC.dark : CHOC.milk); big = 0.42; }
-  else { m = new THREE.Mesh(BONBON[BKEYS[i % 3]], bonMats[(i * 3 + (i >> 2)) % bonMats.length]); big = 0.78; }
+  m = new THREE.Mesh(BONBON[BKEYS[i % 3]], bonMats[(i * 3 + (i >> 2)) % bonMats.length]); big = 0.78;   // flower chocolates only
   const gx = i % GX, gy = Math.floor(i / GX);
   const nx = ((gx + 0.2 + rng() * 0.6) / GX) * 2 - 1, ny = ((gy + 0.2 + rng() * 0.6) / GY) * 2 - 1;
   m.userData = { nx, ny, z: -5 + rng() * 7, spin: (rng() - .5) * 1.4, s: big * (MOBILE ? 0.6 : 1) * (0.75 + rng() * 0.6), wob: rng() * 6, rx: (rng() - .5) * 1.4, ry: (rng() - .5) * 1.4,
-                 extra: 0, pop: 1, mi: Math.max(0, bonMats.indexOf(m.material)) };
+                 extra: 0, pop: 1, mi: Math.max(0, matsOf(m).indexOf(m.material)) };
   m.rotation.set(m.userData.rx, m.userData.ry, rng() * 6);
   swarm.add(m); bits.push(m);
 }
@@ -781,7 +871,7 @@ function spinChoc(m) {
   gsap.timeline({ onComplete: () => { u.busy = false; u.extra %= Math.PI * 2; } })
     .to(u, { extra: u.extra + Math.PI * 2, duration: 1.1, ease: 'power3.inOut' }, 0)
     .to(u, { pop: 1.3, duration: 0.35, ease: 'power2.out' }, 0)
-    .add(() => { u.mi = (u.mi + 1) % bonMats.length; m.material = bonMats[u.mi]; }, 0.45)
+    .add(() => { u.mi = (u.mi + 1) % bonMats.length; m.material = matsOf(m)[u.mi]; }, 0.45)
     .to(u, { pop: 1, duration: 0.8, ease: 'elastic.out(1, .45)' }, 0.45);
 }
 { let down = null;
@@ -855,6 +945,18 @@ function intro() {
 const heroChs = intro();
 
 /* ---------------- buy → cart ---------------- */
+{ // logo: the mark grows 10%, then turns over once; the wordmark pops 5% (CSS)
+  const br = $('.brand'), mk = br.querySelector('svg'); let an = null, busy = false;
+  const flip = () => {
+    if (busy || reduce) return; busy = true;
+    an = mk.animate([{ transform: 'scale(1) rotateY(0deg)' }, { transform: 'scale(1.1) rotateY(0deg)', offset: .22 }, { transform: 'scale(1.1) rotateY(360deg)' }],
+      { duration: 1100, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' });
+    an.onfinish = () => { busy = false; if (!br.matches(':hover')) settle(); };
+  };
+  const settle = () => { if (busy) return; mk.animate([{ transform: 'scale(1.1)' }, { transform: 'scale(1)' }], { duration: 450, easing: 'cubic-bezier(.3,1.5,.5,1)', fill: 'forwards' }); };
+  br.addEventListener('mouseenter', flip); br.addEventListener('mouseleave', settle);
+  br.addEventListener('touchstart', () => { br.classList.add('pop'); flip(); setTimeout(() => { br.classList.remove('pop'); settle(); }, 1300); }, { passive: true });
+}
 const ctaEl = $('#cta'), cartN = $('#cartN');
 const visitEl = $('#visit');
 // Buy appears with the box (as the story section comes in); it turns into Cart
@@ -863,7 +965,7 @@ const storyEl = $('#story'), colEl = $('#collection');
 const ctaMode = () => {
   const vh = innerHeight;
   const hasItems = Object.keys(cart).length > 0;          // once something is in the cart, it stays a Cart button
-  ctaEl.classList.toggle('show', reduce || hasItems || storyEl.getBoundingClientRect().top < vh * 0.6);
+  ctaEl.classList.toggle('show', reduce || storyEl.getBoundingClientRect().top < vh * 0.6);   // never over the opening, cart or not
   ctaEl.classList.toggle('cart', hasItems || colEl.getBoundingClientRect().top < -6.5 * vh);
 };
 addEventListener('scroll', ctaMode, { passive: true }); addEventListener('resize', ctaMode);
@@ -878,7 +980,7 @@ function renderCart(bump) {
   const list = $('#cartList');
   list.innerHTML = n ? Object.entries(cart).filter(([, q]) => q > 0).map(([f, q]) =>
     `<div class="it"><span class="dot" style="background:${FL[f][2]}"></span><p class="nm">${FL[f][0]}<small>${FL[f][1]} · 50g · ¥1,400</small></p>
-     <div class="q"><button type="button" data-q="${f}" data-d="-1" aria-label="減らす">−</button>${q}<button type="button" data-q="${f}" data-d="1" aria-label="増やす">+</button></div></div>`).join('')
+     <div class="q"><button type="button" data-q="${f}" data-d="-1" aria-label="減らす" class="mi"></button><b>${q}</b><button type="button" data-q="${f}" data-d="1" aria-label="増やす" class="pl"></button></div></div>`).join('')
     : '<p class="empty">カートは空です。<br>お好きな味を選んでください。</p>';
   $('#cartTot').textContent = '¥' + (n * 1400).toLocaleString('ja-JP');
   $('#cartMp').textContent = n ? '¥' + (n * 1400).toLocaleString('ja-JP') : '';
@@ -1259,7 +1361,7 @@ function seqFrame(t) {
     b.band.rotation.x = -bandOff * 0.35;
   });
   uPrev = u;
-  rC.render(sceneC, camC);
+  ripRender(rC, sceneC, camC);
 }
 
 /* ---------------- render loop + ruler ---------------- */
@@ -1294,7 +1396,7 @@ function frame() {
   coin.rotation.x = Math.sin(t * 0.5) * 0.25 + 0.15;
   coin.rotation.z = Math.sin(t * 0.3) * 0.08;
   coin.visible = cur.s > 0.002;
-  renderer.render(scene, camera);
+  ripRender(renderer, scene, camera);
   // package
   let f = 'milk'; CH.forEach(c => { if (sy >= c.y) f = c.id; }); setFlavour(f);
   const dt = Math.min(0.05, Math.max(0.001, t - lastT)); lastT = t;
@@ -1314,11 +1416,112 @@ function frame() {
     fitShadow(backBox);
   }
   // the gold mark and the package both live on the back canvas, behind the text
-  if (backBox.g.visible || coin.visible) rB.render(sceneB, camB); else rB.clear();
+  if (backBox.g.visible || coin.visible) ripRender(rB, sceneB, camB); else rB.clear();
   seqFrame(t);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 addEventListener('load', () => ScrollTrigger.refresh());
 })();
+</script>
+<script>
+/* ---------------- water layer ----------------
+   While the page moves from one frame to the next, the whole screen sways gently like the surface of
+   water: text, line illustrations, the dotted grid and the 3D chocolates and boxes all bend through
+   the same slow, wide waves. When scrolling stops the water settles and everything is perfectly
+   still again. Pointer moves, clicks and taps don't disturb it.
+
+   The waves are one smooth, tileable displacement pattern (drawn once). Each frame only its offset
+   and strength change, so nothing is re-encoded and there's no flicker:
+   - page content: SVG feDisplacementMap on each section in view
+   - 3D canvases:  the same formula evaluated in a shader (see ripRender in the main script)        */
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const T = 900;                                   // pattern tile, css px (wide, slow waves)
+  const AMAX = 9;                                  // strongest sway, css px
+  // displacement pattern in tile units (u,v in 0..1), periodic; returns [dx, dy] in -1..1
+  const wave = (u, v) => {
+    const a = 2 * Math.PI;
+    return [0.62 * Math.sin(a * (u + v)) + 0.38 * Math.sin(a * (2 * u - v) + 1.3),
+            0.62 * Math.sin(a * (u - v) + 0.7) + 0.38 * Math.sin(a * (u + 2 * v) + 2.1)];
+  };
+  window.__rip = null;
+
+  // ---- state: strength follows scroll speed, eases in and settles out
+  let amp = 0, target = 0, ox = 0, oy = 0, lastY = scrollY, lastT = performance.now(), lastMove = -1e9, running = false;
+  const state = { amp: () => amp, off: () => [ox, oy], T, alive: () => amp > 0.05 };
+  window.__rip = state;
+
+  addEventListener('scroll', () => {
+    const t = performance.now(), dv = Math.abs(scrollY - lastY), dt = Math.max(8, t - lastT);
+    lastY = scrollY; lastT = t;
+    if (dv < 0.5) return;
+    lastMove = t;
+    target = Math.min(1, 0.35 + (dv / dt) * 0.25);   // faster scroll, a little more sway
+    wake();
+  }, { passive: true });
+
+  // ---- page content: one filter per section, pattern image placed so it lines up with the screen
+  const NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
+  const RES = 4;                                   // pattern drawn at 1/4 resolution, upscaled smoothly
+  let PAT = '', PW = 0, PH = 0;
+  const makePattern = () => {
+    PW = innerWidth + T; PH = innerHeight + T;
+    const w = Math.ceil(PW / RES), h = Math.ceil(PH / RES);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'), im = x.createImageData(w, h), D = im.data;
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+      const [dx, dy] = wave(i * RES / T, j * RES / T), k = (j * w + i) * 4;
+      D[k] = Math.round(127.5 + 127 * dx); D[k + 1] = Math.round(127.5 + 127 * dy); D[k + 2] = 128; D[k + 3] = 255;
+    }
+    x.putImageData(im, 0, 0); PAT = c.toDataURL();
+    FX.forEach(o => { o.im.setAttribute('href', PAT); o.im.setAttributeNS(XL, 'href', PAT); });
+  };
+  const holder = document.createElementNS(NS, 'svg');
+  holder.setAttribute('width', '0'); holder.setAttribute('height', '0'); holder.setAttribute('aria-hidden', 'true');
+  holder.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none';   // (no overflow:hidden: Chrome drops the filter)
+  document.body.appendChild(holder);
+  const mk = (tag, at) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); return e; };
+  const TG = [...document.querySelectorAll('#hero, #story, .chapter, #collection .head, #collection .steps, #carousel, #visit, #where')];
+  const FX = TG.map((el, i) => {
+    const f = mk('filter', { id: 'rpf' + i, filterUnits: 'userSpaceOnUse', primitiveUnits: 'userSpaceOnUse', 'color-interpolation-filters': 'sRGB' });
+    const im = mk('feImage', { preserveAspectRatio: 'none', result: 'm', x: 0, y: 0, width: 1, height: 1 });
+    const dm = mk('feDisplacementMap', { in: 'SourceGraphic', in2: 'm', scale: 0, xChannelSelector: 'R', yChannelSelector: 'G' });
+    f.append(im, dm); holder.appendChild(f);
+    return { el, f, im, dm, on: false };
+  });
+  makePattern();
+  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(makePattern, 200); });
+
+  const unbend = () => FX.forEach(o => { if (o.on) { o.el.style.filter = ''; o.on = false; } });
+  const bend = () => {
+    const W = innerWidth, H = innerHeight;
+    // the pattern repeats every T px, so sliding it by (ox, oy) mod T looks like endless flowing water
+    const sx = -(((ox % T) + T) % T), sy = -(((oy % T) + T) % T);
+    FX.forEach(o => {
+      const b = o.el.getBoundingClientRect();
+      if (!(b.bottom > 0 && b.top < H && b.right > 0 && b.left < W)) { if (o.on) { o.el.style.filter = ''; o.on = false; } return; }
+      o.f.setAttribute('x', -b.left); o.f.setAttribute('y', -b.top); o.f.setAttribute('width', W); o.f.setAttribute('height', H);
+      o.im.setAttribute('x', sx - b.left); o.im.setAttribute('y', sy - b.top); o.im.setAttribute('width', PW); o.im.setAttribute('height', PH);
+      o.dm.setAttribute('scale', (amp * AMAX * 2).toFixed(2));
+      if (!o.on) { o.el.style.filter = `url(#${o.f.id})`; o.on = true; }
+    });
+  };
+
+  function wake() { if (!running) { running = true; lastF = performance.now(); requestAnimationFrame(tick); } }
+  let lastF = 0;
+  function tick(t) {
+    const dt = Math.min(0.05, (t - lastF) / 1000); lastF = t;
+    const idle = (performance.now() - lastMove) / 1000;
+    if (idle > 0.15) target = 0;
+    // ease in over ~0.35 s, settle out over ~1 s
+    amp += (target - amp) * (1 - Math.exp(-dt * (target > amp ? 6 : 3.2)));
+    // the water drifts slowly while it's moving
+    ox += dt * 38 * (0.4 + amp); oy += dt * 24 * (0.4 + amp);
+    if (amp < 0.02 && target === 0) { amp = 0; running = false; unbend(); return; }
+    bend();
+    requestAnimationFrame(tick);
+  }
+})();
+
 </script>
