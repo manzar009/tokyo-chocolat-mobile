@@ -30,7 +30,9 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
-html,body{background:var(--paper);color:var(--ink)}
+html,body{margin:0}
+html{background:var(--paper)}
+body{background:transparent;color:var(--ink)}   /* transparent so the fixed dot layer (z -1) shows */
 body{font-family:var(--f-sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;
   padding-left:max(0px, env(safe-area-inset-left,0px));padding-right:max(0px, env(safe-area-inset-right,0px))}
 html.lenis,html.lenis body{height:auto}
@@ -41,7 +43,7 @@ a{color:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
 /* dotted paper ground */
-body{background-color:var(--paper);
+#dots{position:fixed;inset:0;z-index:-1;pointer-events:none;
   background-image:radial-gradient(circle at 1px 1px, rgba(22,17,14,.16) 1px, transparent 1.4px);
   background-size:26px 26px}
 
@@ -65,7 +67,7 @@ main{position:relative;z-index:2}
 #gl canvas{display:block;width:100%;height:100%}
 
 #hint{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;flex-direction:column;align-items:center;gap:14px;
-  padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));color:#F4EFE7;pointer-events:none}
+  padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));color:#F4EFE7;pointer-events:none;text-shadow:0 1px 14px rgba(20,10,6,.9),0 0 3px rgba(20,10,6,.6)}
 #hint .l1{font:300 15px/1.2 var(--f-sans);letter-spacing:.04em;display:flex;gap:.35em;flex-wrap:wrap;justify-content:center}
 #hint .l1 .w{overflow:hidden;display:inline-block}
 #hint .l1 .w>span{display:inline-block}
@@ -84,6 +86,10 @@ header.site.on{opacity:1;pointer-events:auto}
 .navlink{position:relative;font:500 13px/1 var(--f-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-decoration:none;padding:12px 2px}
 .navlink::after{content:"";position:absolute;left:2px;right:2px;bottom:6px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .5s cubic-bezier(.7,0,.2,1)}
 .navlink:hover::after,.navlink:focus-visible::after{transform:scaleX(1);transform-origin:left}
+/* over the dark buying section the header turns light so it stays readable */
+header.site .navlink,header.site .brand svg:last-child path{transition:color .5s,fill .5s}
+header.site.dk .navlink{color:#F4EFE7}
+header.site.dk .brand svg:last-child path{fill:#F4EFE7}
 .nav{display:flex;gap:34px;position:absolute;left:50%;top:calc(18px + env(safe-area-inset-top,0px));transform:translateX(-50%)}
 /* ---------- buy / cart button (top right, always) ---------- */
 #cta{position:fixed;z-index:60;top:calc(16px + env(safe-area-inset-top,0px));right:max(20px, env(safe-area-inset-right,0px));perspective:700px;
@@ -122,13 +128,14 @@ header.site.on{opacity:1;pointer-events:auto}
 /* cart drawer */
 #cartBg{position:fixed;inset:0;z-index:70;background:rgba(22,17,14,.38);opacity:0;pointer-events:none;transition:opacity .5s}
 #cartBg.open{opacity:1;pointer-events:auto}
-#cartPanel{position:fixed;z-index:71;top:0;right:0;bottom:0;width:min(400px,92vw);background:#FBFAF7;box-shadow:-30px 0 60px -20px rgba(40,22,10,.35);
+#cartPanel{position:fixed;z-index:71;top:0;right:0;bottom:0;width:min(400px,92vw);background:#FBFAF7;box-shadow:none;visibility:hidden;transition:transform .7s cubic-bezier(.7,0,.2,1),visibility 0s .7s,box-shadow .4s;
   transform:translateX(104%);transition:transform .7s cubic-bezier(.7,0,.2,1);display:flex;flex-direction:column;padding:calc(26px + env(safe-area-inset-top,0px)) 26px 26px}
-#cartPanel.open{transform:none}
+#cartPanel.open{transform:none;visibility:visible;transition:transform .7s cubic-bezier(.7,0,.2,1),visibility 0s,box-shadow .4s;box-shadow:-30px 0 60px -20px rgba(40,22,10,.35)}
 #cartPanel h2{font:300 italic 40px/1 var(--f-display);display:flex;align-items:baseline;gap:12px}
 #cartPanel h2 span{font:500 13px/1 var(--f-jp);font-style:normal;letter-spacing:.2em;color:var(--mute)}
 #cartPanel button{color:var(--ink)}
-#cartPanel .x{position:absolute;top:calc(22px + env(safe-area-inset-top,0px));right:20px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(22,17,14,.15);background:none;font-size:18px;cursor:pointer;display:grid;place-items:center;transition:background .3s,color .3s,transform .5s cubic-bezier(.3,1.5,.5,1)}
+#cartPanel .hd{display:flex;align-items:center;justify-content:space-between;gap:16px}
+#cartPanel .x{position:relative;flex:none;width:40px;height:40px;border-radius:50%;border:1px solid rgba(22,17,14,.15);background:none;font-size:18px;cursor:pointer;display:grid;place-items:center;transition:background .3s,color .3s,transform .5s cubic-bezier(.3,1.5,.5,1)}
 #cartPanel .x:hover{background:var(--ink);color:#fff;transform:rotate(90deg)}
 #cartList{flex:1;overflow:auto;margin:26px 0;display:flex;flex-direction:column;gap:12px}
 #cartList .it{display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid rgba(22,17,14,.08)}
@@ -223,7 +230,7 @@ button.cta{border:0;cursor:pointer}
 #collection{position:relative;height:900vh}
 #collection .pin{position:sticky;top:0;touch-action:pan-y;height:100vh;height:100svh;overflow:hidden}
 #collection .head{position:absolute;z-index:3;left:max(20px,5vw);right:max(20px,5vw);top:max(84px,12vh);display:flex;justify-content:space-between;align-items:flex-start;gap:24px;pointer-events:none}
-#collection .head .sub{font:500 14px/1.9 var(--f-jp);color:var(--mute);max-width:24em;text-align:right}
+#collection .head .sub{font:500 14px/1.9 var(--f-jp);color:#6F665E;max-width:24em;text-align:right}
 #glBox{position:absolute;inset:0;z-index:2;pointer-events:none}
 #glBox canvas{display:block;width:100%;height:100%}
 .steps{position:absolute;z-index:3;left:max(20px,5vw);bottom:max(56px,12vh);width:min(30em,calc(100vw - 40px));list-style:none;margin:0;padding:0;pointer-events:none}
@@ -256,7 +263,7 @@ button.cta{border:0;cursor:pointer}
 .pcard .price{font:300 34px/1 var(--f-sans);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .pcard .price small{font:500 11px/1 var(--f-jp);letter-spacing:.15em;margin-left:6px;color:var(--mute)}
 .pcard .tag{font:600 10px/1 var(--f-sans);letter-spacing:.16em;text-transform:uppercase;padding:9px 12px;border-radius:99px;background:var(--fc);color:#fff;white-space:nowrap;text-decoration:none}
-.cctl{position:absolute;z-index:4;left:50%;bottom:max(20px,4.5vh);transform:translateX(-50%);display:flex;align-items:center;gap:18px;opacity:0;pointer-events:none}
+.cctl{position:absolute;z-index:4;left:50%;bottom:max(14px,2.4vh);transform:translateX(-50%);display:flex;align-items:center;gap:18px;opacity:0;pointer-events:none}
 .cctl.on{pointer-events:auto}
 .cctl button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(22,17,14,.18);background:rgba(251,250,247,.8);font:400 18px/1 var(--f-sans);color:var(--ink);cursor:pointer;transition:background .3s,color .3s}
 .cctl button:hover{background:var(--ink);color:#fff}
@@ -392,7 +399,7 @@ html.m #cartPanel{top:auto;left:0;right:0;width:auto;max-height:84vh;border-radi
   padding:30px 22px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -30px 60px -20px rgba(40,22,10,.35)}
 html.m #cartPanel.open{transform:none}
 html.m #cartPanel::before{content:"";position:absolute;top:10px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:2px;background:rgba(22,17,14,.18)}
-html.m #cartPanel .x{top:18px}
+html.m #cartPanel .hd{margin-top:6px}
 html.m #cartList{min-height:120px}
 
 /* hero: "Tokyo" over "Chocolat" */
@@ -453,8 +460,12 @@ html.m footer .cols{grid-template-columns:1fr 1fr;gap:26px 16px}
 html.m footer .cols>div:first-child{grid-column:1 / -1}
 html.m footer .giantmark{margin-top:6vh}
 
+html.m header.site.dk #mbtn i{background:#F4EFE7}
+html.m footer{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}   /* clear of the floating Buy/Cart bar */
+
 </style>
 
+<div id="dots" aria-hidden="true"></div>
 <div id="loader" aria-hidden="true">
   <div class="word"><span>T</span><span>O</span><span>K</span><span>Y</span><span>O</span></div>
   <p class="jp">東京の味を、ひと粒に。</p>
@@ -524,8 +535,8 @@ html.m footer .giantmark{margin-top:6vh}
 </div>
 <div id="cartBg"></div>
 <aside id="cartPanel" aria-label="カート" aria-hidden="true">
-  <h2>Cart <span>カート</span></h2>
-  <button type="button" class="x" id="cartX" aria-label="閉じる"></button>
+  <div class="hd"><h2>Cart <span>カート</span></h2>
+  <button type="button" class="x" id="cartX" aria-label="閉じる"></button></div>
   <div id="cartList"></div>
   <div class="tot"><p>Total · 税抜</p><b id="cartTot">¥0</b></div>
   <button type="button" class="go" id="cartGo">Checkout</button>
@@ -727,7 +738,7 @@ const ripRender = (() => {
   const v2 = new THREE.Vector2();
   return (r, scene, cam) => {
     const RP = window.__rip;
-    if (!RP || !RP.alive()) { r.render(scene, cam); return; }
+    if (!RP || !RP.gl3d || !RP.alive()) { r.render(scene, cam); return; }   // 3D stays crisp (gl3d off)
     let c = cache.get(r);
     r.getDrawingBufferSize(v2);
     if (!c) {
@@ -832,8 +843,8 @@ const ENGRAVE = (() => {
   return { bump: new THREE.CanvasTexture(c2), tone };
 })();
 ENGRAVE.bump.anisotropy = 8;
-const BONBON = { matcha: bonbon(bloomShape(5, 0, 0.55)), strawberry: bonbon(bloomShape(8, 0.16, 1.4)), milk: bonbon(bloomShape(5, 0.14, 0.75)) };
-const chocM = (c, r = 0.32) => lin(new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.22, envMapIntensity: 0.95,
+const BONBON = { matcha: bonbon(bloomShape(5, 0, 0.55)), strawberry: bonbon(bloomShape(5, 0.07, 1.05)), milk: bonbon(bloomShape(5, 0.14, 0.75)) };
+const chocM = (c, r = 0.32) => lin(new THREE.MeshPhysicalMaterial({ color: c, roughness: r, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.3, envMapIntensity: 0.6,
   map: ENGRAVE.tone, bumpMap: ENGRAVE.bump, bumpScale: 0.06 }));
 const CHOC = { dark: chocM(0x3a2015), milk: chocM(0x8a5532), strawberry: chocM(0xd98a9c, 0.38), matcha: chocM(0x7f8e45, 0.42), white: chocM(0xeee2cf, 0.38) };
 const swarm = new THREE.Group(); scene.add(swarm);
@@ -962,7 +973,9 @@ const visitEl = $('#visit');
 // Buy appears with the box (as the story section comes in); it turns into Cart
 // the moment the three product cards are on screen.
 const storyEl = $('#story'), colEl = $('#collection');
+const visitEl0 = document.getElementById('visit');
 const ctaMode = () => {
+  { const r = visitEl0.getBoundingClientRect(); $('#hdr').classList.toggle('dk', r.top < -0.45 * r.height && r.bottom > 30); }   // the buying section darkens towards its foot
   const vh = innerHeight;
   const hasItems = Object.keys(cart).length > 0;          // once something is in the cart, it stays a Cart button
   ctaEl.classList.toggle('show', reduce || storyEl.getBoundingClientRect().top < vh * 0.6);   // never over the opening, cart or not
@@ -1007,6 +1020,7 @@ ScrollTrigger.create({
     if (!reduce) drawCurtain(heroP);
     hint.style.opacity = 1 - clamp(heroP / 0.08);
     const on = heroP > 0.74 || reduce; hdr.classList.toggle('on', on); rul.classList.toggle('on', on);
+    $('#hero .sub').style.visibility = heroP > 0.95 && !reduce ? 'hidden' : '';   // gone before the gold coin passes through
   }
 });
 if (!reduce) drawCurtain(0);
@@ -1449,7 +1463,7 @@ addEventListener('load', () => ScrollTrigger.refresh());
 
   // ---- state: strength follows scroll speed, eases in and settles out
   let amp = 0, target = 0, ox = 0, oy = 0, lastY = scrollY, lastT = performance.now(), lastMove = -1e9, running = false;
-  const state = { amp: () => amp, off: () => [ox, oy], T, alive: () => amp > 0.05 };
+  const state = { amp: () => amp, off: () => [ox, oy], T, alive: () => amp > 0.05, gl3d: false };
   window.__rip = state;
 
   addEventListener('scroll', () => {
@@ -1482,13 +1496,16 @@ addEventListener('load', () => ScrollTrigger.refresh());
   holder.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none';   // (no overflow:hidden: Chrome drops the filter)
   document.body.appendChild(holder);
   const mk = (tag, at) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); return e; };
-  const TG = [...document.querySelectorAll('#hero, #story, .chapter, #collection .head, #collection .steps, #carousel, #visit, #where')];
+  // only the ground moves: the dotted paper, the gold line drawings and the giant footer mark.
+  // Reading text, buttons and the 3D products stay crisp.
+  const TG = [...document.querySelectorAll('#dots, .chapter .flower, #giantmark')];
   const FX = TG.map((el, i) => {
     const f = mk('filter', { id: 'rpf' + i, filterUnits: 'userSpaceOnUse', primitiveUnits: 'userSpaceOnUse', 'color-interpolation-filters': 'sRGB' });
     const im = mk('feImage', { preserveAspectRatio: 'none', result: 'm', x: 0, y: 0, width: 1, height: 1 });
     const dm = mk('feDisplacementMap', { in: 'SourceGraphic', in2: 'm', scale: 0, xChannelSelector: 'R', yChannelSelector: 'G' });
     f.append(im, dm); holder.appendChild(f);
-    return { el, f, im, dm, on: false };
+    const vb = el.viewBox && el.viewBox.baseVal && el.viewBox.baseVal.width ? el.viewBox.baseVal : null;   // svg: its own units
+    return { el, f, im, dm, vb, on: false };
   });
   makePattern();
   let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(makePattern, 200); });
@@ -1501,9 +1518,10 @@ addEventListener('load', () => ScrollTrigger.refresh());
     FX.forEach(o => {
       const b = o.el.getBoundingClientRect();
       if (!(b.bottom > 0 && b.top < H && b.right > 0 && b.left < W)) { if (o.on) { o.el.style.filter = ''; o.on = false; } return; }
-      o.f.setAttribute('x', -b.left); o.f.setAttribute('y', -b.top); o.f.setAttribute('width', W); o.f.setAttribute('height', H);
-      o.im.setAttribute('x', sx - b.left); o.im.setAttribute('y', sy - b.top); o.im.setAttribute('width', PW); o.im.setAttribute('height', PH);
-      o.dm.setAttribute('scale', (amp * AMAX * 2).toFixed(2));
+      const k = o.vb ? o.vb.width / Math.max(1, b.width) : 1, ox0 = o.vb ? o.vb.x : 0, oy0 = o.vb ? o.vb.y : 0;
+      o.f.setAttribute('x', ox0 - b.left * k); o.f.setAttribute('y', oy0 - b.top * k); o.f.setAttribute('width', W * k); o.f.setAttribute('height', H * k);
+      o.im.setAttribute('x', ox0 + (sx - b.left) * k); o.im.setAttribute('y', oy0 + (sy - b.top) * k); o.im.setAttribute('width', PW * k); o.im.setAttribute('height', PH * k);
+      o.dm.setAttribute('scale', (amp * AMAX * 2 * k).toFixed(3));
       if (!o.on) { o.el.style.filter = `url(#${o.f.id})`; o.on = true; }
     });
   };
